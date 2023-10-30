@@ -20,12 +20,11 @@ jobs:
       - name: Configure AWS credentials OIDC
         uses: aws-actions/configure-aws-credentials@v2
         with:
-          role-to-assume: prueba-epayco-devops
+          role-to-assume: arn:aws:iam::293880255745:role/prueba-epayco-devops
           role-session-name: OIDCGithub
           aws-region: us-east-1
 
-      - name: Deploy Lambda function DEV
-        working-directory: start-stop-services-function
+      - name: Deploy infraestructure
         env:
           SAM_CLI_TELEMETRY: "0"
         run: |
