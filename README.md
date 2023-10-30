@@ -6,6 +6,7 @@
 
 ### La propuesta número 1:
 
+![](DiagramaPropuesta1.png)
 
 ##### Esta arquitectura fue realizada con AWS Application Composer el cual nos crea una plantilla de AWS CloudFormation que está diseñada para implementar una solución serverless en Amazon Web Services (AWS). La solución se centra en la gestión de confirmaciones de transacciones para una empresa de pagos y aborda un desafío particular: la necesidad de confirmar un gran número de transacciones a clientes a una alta velocidad.
 
