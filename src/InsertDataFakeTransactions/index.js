@@ -48,6 +48,7 @@ function generateFakeTransactions(count) {
       phone_number: generateRandomPhoneNumber(),
       amount: generateRandomAmount(),
       creation_date: new Date().getTime(),
+      confirmation_send: false,
     };
     transactions.push(transaction);
   }

@@ -1,0 +1,32 @@
+name: Deploy IaC ePayco DevOps
+
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Configure AWS credentials OIDC
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          role-to-assume: prueba-epayco-devops
+          role-session-name: OIDCGithub
+          aws-region: us-east-1
+
+      - name: Deploy Lambda function DEV
+        working-directory: start-stop-services-function
+        env:
+          SAM_CLI_TELEMETRY: "0"
+        run: |
+          sam deploy --stack-name prueba-epayco-devops --template-file template.yaml --capabilities CAPABILITY_NAMED_IAM --resolve-s3 --no-progressbar

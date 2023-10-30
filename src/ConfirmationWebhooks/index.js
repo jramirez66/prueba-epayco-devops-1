@@ -5,7 +5,7 @@ exports.handler = async (event) => {
     JSON.stringify(event, undefined, 2)
   );
 
-  console.log("TRANSACTION ID:::::", JSON.parse(event.body));
+  console.log("TRANSACTION ID: ", JSON.parse(event.body));
 
   return {
     statusCode: 200,
