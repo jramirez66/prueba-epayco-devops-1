@@ -1,0 +1,112 @@
+Transform: AWS::Serverless-2016-10-31
+Resources:
+  InsertDataFakeTransactions:
+    Type: AWS::Serverless::Function
+    Properties:
+      Description: !Sub
+        - Stack ${AWS::StackName} Function ${ResourceName}
+        - ResourceName: InsertDataFakeTransactions
+      CodeUri: src/InsertDataFakeTransactions
+      Handler: index.handler
+      Runtime: nodejs18.x
+      MemorySize: 3008
+      Timeout: 30
+      Tracing: Active
+      Environment:
+        Variables:
+          TRANSACTIONS_TABLE_NAME: !Ref Transactions
+          TRANSACTIONS_TABLE_ARN: !GetAtt Transactions.Arn
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: !Ref Transactions
+  InsertDataFakeTransactionsLogGroup:
+    Type: AWS::Logs::LogGroup
+    DeletionPolicy: Retain
+    Properties:
+      LogGroupName: !Sub /aws/lambda/${InsertDataFakeTransactions}
+  Transactions:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      AttributeDefinitions:
+        - AttributeName: id
+          AttributeType: S
+        - AttributeName: creation_date
+          AttributeType: 'N'
+      BillingMode: PAY_PER_REQUEST
+      KeySchema:
+        - AttributeName: id
+          KeyType: HASH
+        - AttributeName: creation_date
+          KeyType: RANGE
+      StreamSpecification:
+        StreamViewType: NEW_AND_OLD_IMAGES
+  ConfirmationTransactions:
+    Type: AWS::Serverless::Function
+    Properties:
+      Description: !Sub
+        - Stack ${AWS::StackName} Function ${ResourceName}
+        - ResourceName: ConfirmationTransactions
+      CodeUri: src/ConfirmationTransactions
+      Handler: index.handler
+      Runtime: nodejs18.x
+      MemorySize: 3008
+      Timeout: 30
+      Tracing: Active
+      Events:
+        Transactions:
+          Type: DynamoDB
+          Properties:
+            Stream: !GetAtt Transactions.StreamArn
+            StartingPosition: TRIM_HORIZON
+            BatchSize: 1
+  ConfirmationTransactionsLogGroup:
+    Type: AWS::Logs::LogGroup
+    DeletionPolicy: Retain
+    Properties:
+      LogGroupName: !Sub /aws/lambda/${ConfirmationTransactions}
+  ApiWebhook:
+    Type: AWS::Serverless::Api
+    Properties:
+      Name: !Sub
+        - ${ResourceName} From Stack ${AWS::StackName}
+        - ResourceName: ApiWebhook
+      StageName: Prod
+      DefinitionBody:
+        openapi: '3.0'
+        info: {}
+        paths:
+          /confirmation:
+            post:
+              x-amazon-apigateway-integration:
+                httpMethod: POST
+                type: aws_proxy
+                uri: !Sub arn:${AWS::Partition}:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${ConfirmationWebhook.Arn}/invocations
+              responses: {}
+      EndpointConfiguration: REGIONAL
+      TracingEnabled: true
+      Cors:
+        MaxAge: 5
+  ConfirmationWebhook:
+    Type: AWS::Serverless::Function
+    Properties:
+      Description: !Sub
+        - Stack ${AWS::StackName} Function ${ResourceName}
+        - ResourceName: ConfirmationWebhook
+      CodeUri: src/ConfirmationWebhook
+      Handler: index.handler
+      Runtime: nodejs18.x
+      MemorySize: 3008
+      Timeout: 30
+      Tracing: Active
+      Events:
+        ApiWebhookPOSTconfirmation:
+          Type: Api
+          Properties:
+            Path: /confirmation
+            Method: POST
+            RestApiId: !Ref ApiWebhook
+  ConfirmationWebhookLogGroup:
+    Type: AWS::Logs::LogGroup
+    DeletionPolicy: Retain
+    Properties:
+      LogGroupName: !Sub /aws/lambda/${ConfirmationWebhook}
