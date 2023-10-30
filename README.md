@@ -22,13 +22,13 @@
 
 ### DynamoDB Table (Transactions):
 
-##### Una tabla de DynamoDB llamada "Transactions" que almacena datos de transacciones con atributos específicos y un modelo de facturación basado en solicitudes.
+##### - Una tabla de DynamoDB llamada "Transactions" que almacena datos de transacciones con atributos específicos y un modelo de facturación basado en solicitudes.
 ### Registro de Eventos (CloudWatch Logs):
 
-##### Se crean grupos de registro para cada función Lambda para la gestión y monitorización de registros.
+##### - Se crean grupos de registro para cada función Lambda para la gestión y monitorización de registros.
 ### API Gateway:
 
-##### Una API de Gateway de API que expone una ruta /confirmation para recibir solicitudes de clientes y enrutarlas a la función ConfirmationWebhook.
+##### - Una API de Gateway de API que expone una ruta /confirmation para recibir solicitudes de clientes y enrutarlas a la función ConfirmationWebhook.
 ### Características Clave:
 
 ##### - Uso de funciones Lambda serverless para gestionar transacciones y confirmaciones.
