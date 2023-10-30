@@ -7,7 +7,7 @@ const tableName = process.env.TRANSACTIONS_TABLE_NAME;
 exports.handler = async (event) => {
   // Log the event argument for debugging and for use in local development.
   console.log(
-    "RECEIVING TRANSACTION FROM DYNAMO DB STREAMS: ",
+    "RECEIVING TRANSACTION FROM DYNAMO DB STREAMS v1: ",
     JSON.stringify(event, undefined, 2)
   );
 
